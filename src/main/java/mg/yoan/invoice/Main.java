@@ -48,4 +48,48 @@ public class Main {
             throw new RuntimeException(e);
         }
         }
+
+    List<InvoiceTotal> findConfirmedAndPaidInvoices() {
+        ArrayList<InvoiceTotal> invoiceTotals = new ArrayList<>();
+        DBConnection db = new DBConnection();
+        Connection conn = db.getConnection();
+
+        try {
+            conn.setAutoCommit(false);
+
+            String sql = """
+            SELECT i.id,
+                   i.customer_name,
+                   COALESCE(SUM(il.unit_price * il.quantity), 0) AS total
+            FROM invoice i
+            LEFT JOIN invoice_line il ON il.invoice_id = i.id
+            WHERE i.status = 'CONFIRMED' AND i.status = 'PAID'
+            GROUP BY i.id, i.customer_name
+            ORDER BY i.id
+            """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String customerName = rs.getString("customer_name");
+                double total = rs.getDouble("total");
+
+                invoiceTotals.add(new InvoiceTotal(id, customerName, total));
+            }
+
+            conn.commit();
+            rs.close();
+            ps.close();
+            conn.close();
+
+            return invoiceTotals;
+
+        } catch (Exception e) {
+            try { conn.rollback(); } catch (Exception ignored) {}
+            throw new RuntimeException(e);
+        }
+    }
+
     };
