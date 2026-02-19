@@ -143,5 +143,9 @@ public class Main {
         }
     }
 
+    Double computeWeightedTurnover (){
+        throw new UnsupportedOperationException("Not implemented yet");
+    };
+
 
 };
