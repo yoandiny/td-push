@@ -2,12 +2,12 @@ package mg.yoan.invoice;
 
 import java.util.List;
 
-public class Invoice {
+public class InvoiceTotal {
     private Integer id;
     private String customerName;
+    private Integer total;
     private InvoiceStatusEnum status;
 
-
-
-    List<Object>
+    public InvoiceTotal(int id, String customerName, double total) {
+    }
 }
